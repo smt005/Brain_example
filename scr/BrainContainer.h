@@ -46,5 +46,8 @@ struct BrainContainer
 {
 	std::vector<LayerContainer> layers;
 	void initDefault();
+	void generate();
 	void show();
 };
+
+void cross(const BrainContainer& bestBrain, BrainContainer& newBrain);

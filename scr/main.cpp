@@ -19,12 +19,14 @@
 #include "Neuron.h"
 #include "Print.h"
 #include "Test.h"
+#include "Learn.h"
 
 int main() {
 
 	log("BEGIN");
 
-	test();
+	learn(1000, 1000);
+	//test();
 
 	log("END");
 
