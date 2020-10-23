@@ -3,8 +3,18 @@
 #include "Brain.h"
 
 namespace NeuralNetwork {
-	void printResult(const std::vector<double>& inData, const std::vector<double>& outData) {
+
+	void printResult(const std::vector<double>& inData, Brain& brain) {
+		std::vector<double> outData;
+		brain.action(inData, outData);
+		printResult(inData, outData, brain.errorInfo, brain.generationInfo, brain.itemIndexInfo);
+	}
+
+	void printResult(const std::vector<double>& inData, const std::vector<double>& outData, const double error, const int generation, const int index) {
 		std::cout << std::endl;
+		if (error > 0.0) {
+			std::cout << "brain config, ERROR: " << error << ", id: [" << generation << ", " << index << ']' << std::endl;
+		}
 
 		size_t sizeIn = inData.size();
 		size_t sizeOut = outData.size();
@@ -53,22 +63,17 @@ namespace NeuralNetwork {
 			std::cout << std::endl;
 		}
 
-		std::cout << "--------------" << std::endl << std::endl;
+		std::cout << std::endl;
 	}
 
-	void printConfigPtr(Brain* brain) {
-
-		if (!brain) {
-			return;
-		}
-
-		std::cout << "BRAIN ---------------------------------------------------------------------------------------------" << std::endl;
+	void printConfigPtr(Brain& brain) {
+		std::cout << "brain config, ERROR: " << brain.errorInfo << ", id: [" << brain.generationInfo << ", " << brain.itemIndexInfo << ']' << std::endl;
 
 		std::string tab;
 
 		int iLayer = 0;
-		for (Layer& layer : brain->getLayer()) {
-			std::cout << tab << '[' << iLayer << "] ------------------------------------------------" << std::endl;
+		for (Layer& layer : brain.getLayer()) {
+			std::cout << tab << "layer: [" << iLayer << "] ---" << std::endl;
 
 			int iN = 0;
 			for (Neuron& neuron : layer) {
@@ -92,7 +97,7 @@ namespace NeuralNetwork {
 			tab += "\t";
 		}
 
-		std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
+		std::cout << std::endl;
 	}
 
 }

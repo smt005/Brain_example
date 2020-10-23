@@ -1,5 +1,5 @@
 
-#include "Test.h"
+#include "Example.h"
 #include "Brain.h"
 #include "Print.h"
 
@@ -21,7 +21,7 @@ namespace NeuralNetwork {
 		runBarain->action(in, out);
 
 		if (!barain && runBarain) {
-			NeuralNetwork::printConfigPtr(runBarain);
+			NeuralNetwork::printConfigPtr(*runBarain);
 		}
 
 		if (!barain) {

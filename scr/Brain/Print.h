@@ -12,7 +12,8 @@ void log(const Text& text) {
 	std::cout << text << std::endl;
 }
 
-void printResult(const std::vector<double>& inData, const std::vector<double>& outData);
-void printConfigPtr(Brain* brain);
+void printResult(const std::vector<double>& inData, Brain& brain);
+void printResult(const std::vector<double>& inData, const std::vector<double>& outData, const double errorInfo = 0, const int generation = 0, const int index = 0);
+void printConfigPtr(Brain& brain);
 
 }

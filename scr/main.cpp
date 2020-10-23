@@ -17,7 +17,7 @@
 
 #include "Brain/Brain.h"
 #include "Brain/Print.h"
-#include  "Brain/Test.h"
+#include  "Brain/Example.h"
 #include "Brain/Training.h"
 
 int main() {
