@@ -1,34 +1,32 @@
 
 /*
-0, 0, 0 - стоять
-1, 0, 1 - вперёд
-0, 1, 0 - назад
-1, 0, 0 - смещение влево
-0, 0, 1 - смещение вправо
-1, 1, 0 - поворот на лево
-0, 1, 1 - поворот на право
-1, 1, 1 - действие
+0, 0, 0 - стоять			0, 0, 0, 0
+1, 0, 1 - вперёд			+1, 0, 0, 0
+0, 1, 0 - назад				-1, 0, 0, 0
+1, 0, 0 - смещение влево	0, -1, 0, 0
+0, 0, 1 - смещение вправо	0, +1, 0, 0
+1, 1, 0 - поворот на лево	0, -1, -1, 0
+0, 1, 1 - поворот на право	0, +1, +1, 0
+1, 1, 1 - действие			0, 0, 0, +1
 */
 
-#pragma once
-
+#include <Windows.h>
 #include <iostream>
 #include <string>
+#include <vector>
 
-#include "Brain.h"
-#include "Neuron.h"
-#include "Print.h"
-#include "Test.h"
-#include "Learn.h"
+#include "Brain/Brain.h"
+#include "Brain/Print.h"
+#include  "Brain/Test.h"
+#include "Brain/Training.h"
 
 int main() {
+	NeuralNetwork::log("BEGIN");
 
-	log("BEGIN");
+	NeuralNetwork::main_train();
+	//NeuralNetwork::main_test();
 
-	learn(1000, 1000);
-	//test();
-
-	log("END");
+	NeuralNetwork::log("END");
 
 	char valueChar;
 	std::cin >> valueChar;
