@@ -1,5 +1,7 @@
 
 #include "Brain.h"
+#include "json/json.h"
+#include "../Common/Help.h"
 
 namespace NeuralNetwork {
 
@@ -203,5 +205,147 @@ namespace NeuralNetwork {
 		}
 
 		return newBrain;
+	}
+
+	void Brain::load(const std::string& fileName) {
+		Json::Value brainJson;
+		help::loadJson(fileName, brainJson);
+
+		if (brainJson.empty()) {
+			return;
+		}
+
+		if (!brainJson["layers"].isArray()) {
+			return;
+		}
+
+		Json::Value& layerJson = brainJson["layers"];
+		const size_t countLayers = layerJson.size();
+		_layers.resize(countLayers);
+
+		// Создание нейронов
+		for (size_t iL = 0; iL < countLayers; ++iL) {
+			auto& neurons = _layers[iL];
+			const auto& neuronsJson = layerJson[iL];
+			auto countNeurons = neuronsJson.size();
+			neurons.resize(countNeurons);
+
+			for (size_t iN = 0; iN < countNeurons; ++iN) {
+				neurons[iN].setLayerNum(iL);
+				neurons[iN].setIndexNum(iN);
+			}
+		}
+
+		// Создание связей
+		for (size_t iL = 0; iL < countLayers; ++iL) {
+			auto& neurons = _layers[iL];
+			const auto& neuronsJson = layerJson[iL];
+			auto countNeurons = neuronsJson.size();
+
+			for (size_t iN = 0; iN < countNeurons; ++iN) {
+				//auto& neuron = neurons[iN];
+				const auto& neuronJson = neuronsJson[iN];
+
+				const double valueActivation = neuronJson["activation"].isDouble() ? neuronJson["activation"].asDouble(): 0.0;
+				//neuron.setValueActivation(valueActivation);
+
+				const double layer = neuronJson["layer"].isInt() ? neuronJson["layer"].asInt() : -1;
+				//neuron.setLayerNum(layer);
+
+				const double index = neuronJson["index"].isInt() ? neuronJson["index"].asInt() : -1;
+				//neuron.setIndexNum(index);
+				if (layer == -1 || index == -1) {
+					continue;
+				}
+
+				auto& neuron = _layers[layer][index];
+
+				neuron.setValueActivation(valueActivation);
+
+				auto& synapses = neuron.getSynapses();
+				auto& synapsesJson = neuronJson["synaps"];
+
+				for (size_t iS = 0; iS < synapsesJson.size(); ++iS) {
+					const auto& synapseJson = synapsesJson[iS];
+
+					auto weight = synapseJson["weight"].isDouble() ? synapseJson["weight"].asDouble() : 0.0;
+					auto layer = synapseJson["layerNeuron"].isInt() ? synapseJson["layerNeuron"].asInt() : -1;
+					auto index = synapseJson["indexNeuron"].isInt() ? synapseJson["indexNeuron"].asInt() : -1;
+
+					if (layer >= 0 && index >= 0 && weight != 0.0) {
+						Neuron& newSynapsNeuron = _layers[layer][index];
+						neuron.addSynaps(&newSynapsNeuron, weight);
+					}
+				}
+			}
+		}
+	}
+
+	void Brain::save(const std::string& fileName) {
+		Json::Value brainJson;
+		brainJson["generation"] = generationInfo;
+		brainJson["index"] = itemIndexInfo;
+		brainJson["last_error"] = errorInfo;
+		brainJson["matting"] = mattingInfo;
+
+		for (size_t iL = 0; iL < _layers.size(); ++iL) {
+			auto& neurons = _layers[iL];
+
+			Json::Value layerJson;
+
+			for (size_t iN = 0; iN < neurons.size(); ++iN) {
+				auto& neuron = neurons[iN];
+
+				const int layerNum = neuron.getLayerNum();
+				const int indexNum = neuron.getIndexNum();
+				const double valueActivation = neuron.getValueActivation();
+
+				Json::Value neuronJson;
+
+				neuronJson["layer"] = layerNum;
+				neuronJson["index"] = indexNum;
+				neuronJson["activation"] = valueActivation;
+
+				auto& synapses = neuron.getSynapses();
+
+				for (size_t iS = 0; iS < synapses.size(); ++iS) {
+					auto& synaps = synapses[iS];
+
+					auto weight = synaps.getWeight();
+					auto& synapsNeyron = synaps.getNeuron();
+
+					auto layer = synapsNeyron.getLayerNum();
+					auto index = synapsNeyron.getIndexNum();
+
+					Json::Value synapsJson;
+
+					synapsJson["weight"] = weight;
+					synapsJson["layerNeuron"] = layer;
+					synapsJson["indexNeuron"] = index;
+
+					neuronJson["synaps"].append(synapsJson);
+				}
+
+				layerJson.append(neuronJson);
+			}
+
+			//brainJson.append(layerJson);
+
+			brainJson["layers"].append(layerJson);
+		}
+
+		help::saveJson(fileName, brainJson);
+	}
+
+	//---
+
+	BrainPtr Brain::loadBrain(const std::string& fileName) {
+		BrainPtr brain(new Brain);
+		brain->load(fileName);
+		return brain;
+	}
+
+	void Brain::saveBrain(Brain& brain, const std::string& fileName) {
+		brain.save(fileName);
 	}
 }

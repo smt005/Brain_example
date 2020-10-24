@@ -3,6 +3,7 @@
 #include "Neuron.h"
 #include <vector>
 #include <memory>
+#include <string>
 
 namespace NeuralNetwork {
 	class Brain;
@@ -27,11 +28,18 @@ namespace NeuralNetwork {
 			return _layers;
 		}
 
+		void load(const std::string& fileName);
+		void save(const std::string& fileName);
+
 	public:
-		int generationInfo;
-		int itemIndexInfo;
-		double errorInfo;
-		double mattingInfo;
+		int generationInfo = 0;
+		int itemIndexInfo = 0;
+		double errorInfo = 0;
+		double mattingInfo = 0;
+
+	public:
+		static BrainPtr loadBrain(const std::string& fileName = "brain.json");
+		static void saveBrain(Brain& brain, const std::string& fileName = "brain.json");
 
 	public:
 		static double valueNeuronActivation;
