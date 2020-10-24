@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ctime>
 
 #include "Brain/Brain.h"
 #include "Brain/Print.h"
@@ -23,11 +24,16 @@
 int main() {
 	NeuralNetwork::log("BEGIN");
 
+	NeuralNetwork::main_prepare();
+	
+	long timeStart = std::clock();
+
 	NeuralNetwork::main_train();
-	//NeuralNetwork::main_test();
+
+	timeStart = std::clock() - timeStart;
+	NeuralNetwork::log("STOP: " + std::to_string(timeStart));
 
 	NeuralNetwork::log("END");
-
 	char valueChar;
 	std::cin >> valueChar;
 	return 0;

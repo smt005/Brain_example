@@ -8,4 +8,5 @@
 namespace NeuralNetwork {
 
 	double getError(Brain& barain, const std::vector<double> in, std::vector<double> outBest);
+	double getCompliance(Brain& barain, const std::vector<double> in, std::vector<double> outBest);
 }

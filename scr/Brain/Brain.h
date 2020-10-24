@@ -31,6 +31,7 @@ namespace NeuralNetwork {
 		int generationInfo;
 		int itemIndexInfo;
 		double errorInfo;
+		double mattingInfo;
 
 	public:
 		static double valueNeuronActivation;
