@@ -28,7 +28,7 @@ namespace NeuralNetwork {
 			return _layers;
 		}
 
-		void load(const std::string& fileName);
+		bool load(const std::string& fileName);
 		void save(const std::string& fileName);
 
 	public:
@@ -36,6 +36,7 @@ namespace NeuralNetwork {
 		int itemIndexInfo = 0;
 		double errorInfo = 0;
 		double mattingInfo = 0;
+		std::string resultInfo;
 
 	public:
 		static BrainPtr loadBrain(const std::string& fileName = "brain.json");

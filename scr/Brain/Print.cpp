@@ -1,6 +1,7 @@
 
 #include "Print.h"
 #include "Brain.h"
+#include <string>
 
 namespace NeuralNetwork {
 
@@ -105,4 +106,107 @@ namespace NeuralNetwork {
 		std::cout << std::endl;
 	}
 
+	void stringResult(std::stringstream& textStream, const std::vector<double>& inData, const std::vector<double>& bestData, Brain& brain) {
+		std::vector<double> outData;
+		brain.action(inData, outData);
+
+		if (outData.size() != bestData.size()) {
+			textStream << "stringResult ERROR: outData.size() != bestData.size()" << std::endl;
+			return;
+		}
+
+		size_t sizeIn = inData.size();
+		size_t sizeOut = outData.size();
+		size_t size = sizeIn > sizeOut ? sizeIn : sizeOut;
+
+		for (size_t index = 0; index < size; ++index) {
+			if (index < sizeIn) {
+				textStream << '[' << (inData[index] > 0.5 ? "1" : "0") << ']';
+			}
+			else {
+				textStream << "     ";
+			}
+
+			if (index < sizeOut) {
+
+				double value = outData[index];
+
+				//---
+				std::string valueStr;
+				if (outData[index] > 0.5) {
+					valueStr = " 1";
+				}
+				else if (outData[index] < -0.5) {
+					valueStr = "-1";
+				}
+				else {
+					valueStr = " 0";
+				}
+
+				//---
+				std::string bestValueStr;
+				if (bestData[index] > 0.5) {
+					bestValueStr = " 1";
+				} else if (bestData[index] < -0.5) {
+					bestValueStr = "-1";
+				}
+				else {
+					bestValueStr = " 0";
+				}
+
+				std::string visibleValue; {
+					visibleValue = '|';
+					for (double i = 0.05; i < std::abs(value/100000); i = i + 0.05) {
+						visibleValue += '.';
+					}
+				}
+
+				//textStream << "\t->\t[" << outData[index] << "]\t[" << std::to_string(bestData[index]) << "]\t" << visibleValue << '\n';
+				
+				textStream << "\t->\t[" << outData[index] << "]\t[" << valueStr << '/' << bestValueStr << "] " << visibleValue << '\n';
+				//textStream << " -> [" << outData[index] << "] [" << valueStr << '/' << bestValueStr << "] " << visibleValue << std::endl;
+
+				/*double bestValue = bestData[index];
+				double value = outData[index];
+
+				//double error = 1.0 / (1.0 + std::abs( bestValue - value ));
+				double error = bestValue / (bestValue + std::abs(bestValue - value) * 2.0);
+				error = std::abs(error);
+				error *= 100.0;
+				error = floor(error * 100) / 100;
+
+				std::string visibleError;
+				if (error >=  0.0 && error <= 100.0) {
+					visibleError = '|';
+
+					for (double i = 5; i <= 100.0; i = i + 10.0) {
+						if (i < error) {
+							visibleError += '-';
+						}
+						else {
+							visibleError += ' ';
+						}
+					}
+					
+					visibleError += '|';
+				} else {
+					visibleError = "| ERROR |";
+				}
+
+				std::string importantError;
+				if (std::abs(bestValue) > 0.5) {
+					importantError = " - " + visibleError;
+				}
+
+				double bestRoundValue = floor(bestData[index] * 10) / 10;
+				std::string bestValueStr = std::to_string(bestRoundValue);
+
+				//textStream << "\t->\t[" << outData[index] << "]\t/ [" << bestData[index] << "]\t\t->\t" << error << "%\t" << visibleError << text << importantError  << '\n';
+				textStream << "\t->\t[" << outData[index] << "]\t/\t[" << bestValueStr << "]\t->\t" << error << "%\t" << visibleError << text << importantError << '\n';*/
+			}
+		}
+
+		//textStream << "\n";
+		textStream << std::endl;
+	}
 }

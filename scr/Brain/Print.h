@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace NeuralNetwork {
 	class Brain;
@@ -16,5 +17,7 @@ void printError(Brain& brain);
 void printResult(const std::vector<double>& inData, Brain& brain);
 void printResult(const std::vector<double>& inData, const std::vector<double>& outData, const double errorInfo = 0, const int generation = 0, const int index = 0);
 void printConfigPtr(Brain& brain);
+
+void stringResult(std::stringstream& textStream, const std::vector<double>& inData, const std::vector<double>& bestData, Brain& brain);
 
 }

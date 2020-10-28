@@ -26,6 +26,13 @@ namespace help
 		return min + range * k;
 	}
 
+	inline double random(const double& min = 0.0f, const double& max = 1.0f, const int& accuracy = 1000000) {
+		int var = rand() % accuracy;
+		double k = static_cast<double>(var) / static_cast<double>(accuracy);
+		double range = max - min;
+		return min + range * k;
+	}
+
 	inline int random_i(const int& min = 0, const int& max = 1) {
 		const int range = max - min;
 		int var = rand() % range;

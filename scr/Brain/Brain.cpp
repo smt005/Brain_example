@@ -42,10 +42,15 @@ namespace NeuralNetwork {
 			for (size_t indexLayer = 0; indexLayer < countLayers; ++indexLayer) {
 				Layer& layer = _layers[indexLayer];
 				for (size_t iNeuron = 0; iNeuron < _layers[indexLayer].size(); ++iNeuron) {
-					layer[iNeuron].set(
+					/*layer[iNeuron].set(
 						indexLayer,
 						iNeuron,
 						random_f(0.1f, valueNeuronActivation)
+					);*/
+					layer[iNeuron].set(
+						indexLayer,
+						iNeuron,
+						random_f(0.001f)
 					);
 				}
 			}
@@ -79,6 +84,7 @@ namespace NeuralNetwork {
 	}
 
 	void Brain::action(const std::vector<double>& in, std::vector<double>& out) {
+		out.clear();
 		size_t countLayers = _layers.size();
 		size_t countData = in.size();
 
@@ -207,16 +213,16 @@ namespace NeuralNetwork {
 		return newBrain;
 	}
 
-	void Brain::load(const std::string& fileName) {
+	bool Brain::load(const std::string& fileName) {
 		Json::Value brainJson;
 		help::loadJson(fileName, brainJson);
 
 		if (brainJson.empty()) {
-			return;
+			return false;
 		}
 
 		if (!brainJson["layers"].isArray()) {
-			return;
+			return false;
 		}
 
 		Json::Value& layerJson = brainJson["layers"];
@@ -255,7 +261,7 @@ namespace NeuralNetwork {
 				const double index = neuronJson["index"].isInt() ? neuronJson["index"].asInt() : -1;
 				//neuron.setIndexNum(index);
 				if (layer == -1 || index == -1) {
-					continue;
+					return false;
 				}
 
 				auto& neuron = _layers[layer][index];
@@ -272,13 +278,16 @@ namespace NeuralNetwork {
 					auto layer = synapseJson["layerNeuron"].isInt() ? synapseJson["layerNeuron"].asInt() : -1;
 					auto index = synapseJson["indexNeuron"].isInt() ? synapseJson["indexNeuron"].asInt() : -1;
 
-					if (layer >= 0 && index >= 0 && weight != 0.0) {
-						Neuron& newSynapsNeuron = _layers[layer][index];
-						neuron.addSynaps(&newSynapsNeuron, weight);
+					if (!(layer >= 0 && index >= 0 && weight != 0.0)) {
+						return false;
 					}
+
+					Neuron& newSynapsNeuron = _layers[layer][index];
+					neuron.addSynaps(&newSynapsNeuron, weight);
 				}
 			}
 		}
+		return true;
 	}
 
 	void Brain::save(const std::string& fileName) {
@@ -287,6 +296,7 @@ namespace NeuralNetwork {
 		brainJson["index"] = itemIndexInfo;
 		brainJson["last_error"] = errorInfo;
 		brainJson["matting"] = mattingInfo;
+		brainJson["result"] = resultInfo;
 
 		for (size_t iL = 0; iL < _layers.size(); ++iL) {
 			auto& neurons = _layers[iL];
@@ -341,8 +351,11 @@ namespace NeuralNetwork {
 
 	BrainPtr Brain::loadBrain(const std::string& fileName) {
 		BrainPtr brain(new Brain);
-		brain->load(fileName);
-		return brain;
+		if (brain->load(fileName)) {
+			return brain;
+		}
+
+		return nullptr;
 	}
 
 	void Brain::saveBrain(Brain& brain, const std::string& fileName) {
